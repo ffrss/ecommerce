@@ -5,10 +5,19 @@ import { useQuery } from 'react-query'
 import { ProductService } from '../../../services/product.service'
 import Button from '../../ui/button/Button'
 import { Gallery } from './gallery/Gallery'
+import { useTypedSelector } from '../../../hooks/useTypedSelector'
+import { useActions } from '../../../hooks/useActions'
 
 const Product: FC = () => {
 	const params = useParams()
-	const { data: product, isLoading } = useQuery(['product', params.id], () =>
+	const productId = params.id
+
+	const { items } = useTypedSelector(state => state.cart)
+	const { removeFromCart, addToCart } = useActions()
+
+	const isInCart = items.some(item => item.id === Number(productId))
+
+	const { data: product, isLoading } = useQuery(['product', productId], () =>
 		ProductService.getProductById(params.id || '')
 	)
 
@@ -35,7 +44,13 @@ const Product: FC = () => {
 				}).format(product.price)}
 			</div>
 
-			<Button>Add to cart</Button>
+			<Button
+				onClick={() =>
+					isInCart ? removeFromCart(Number(productId)) : addToCart(product)
+				}
+			>
+				{isInCart ? 'Product is in cart' : 'Add to cart'}Add to cart
+			</Button>
 		</Layout>
 	)
 }

@@ -1,0 +1,5 @@
+.cart {
+	> div {
+		@apply border border-solid mb-2 py-2.5 px-4 flex justify-between items-center;
+	}
+}
